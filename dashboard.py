@@ -1001,21 +1001,6 @@ for _, post in filtered_posts.iterrows():
                         update_task_status(task_id, new_status)
                         st.rerun()
 
-
-        # 🔥 When clicked → update database
-        if checked != is_done:
-            new_status = "done" if checked else "todo"
-
-            st.rerun()
-
-            st.markdown("### 🤖 Agent Outputs")
-            if len(post_outputs) == 0:
-                st.info("No agent outputs saved yet.")
-            else:
-                for _, row in post_outputs.iterrows():
-                    with st.expander(f"{row['agent_name']} — {row['output_type']}"):
-                        st.text(row["content"])
-
         # XAVI = captions only
         elif selected_player == "Xavi":
             st.markdown("### ✍🏽 Caption Package")
