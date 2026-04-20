@@ -27,6 +27,8 @@ def build_prompt(post: tuple) -> str:
     return f"""
 You are an elite content team for TT&R Elite.
 
+Create a fresh weekly concept and a better final title than the current working title.
+
 Your job is to create a FRESH weekly content concept for this post.
 Do NOT recycle common generic ideas from previous weeks unless the source material clearly calls for it.
 Avoid repeating phrases like "every rep counts" unless the source folder strongly suggests that exact theme.
@@ -55,6 +57,11 @@ IMPORTANT:
 Return your response using ONLY these exact section tags.
 Do not use JSON.
 Do not use markdown code fences.
+
+[[TITLE]]
+Write one strong, fresh content title for this post.
+Keep it short, specific, and social-media friendly.
+Do not just repeat the pillar name.
 
 [[STRATEGY]]
 Best angle:
@@ -116,6 +123,7 @@ def extract_section(text: str, tag: str) -> str:
 
     next_idx = len(text)
     for possible_tag in [
+        "TITLE",
         "STRATEGY",
         "VIDEO",
         "DESIGN",
@@ -156,6 +164,7 @@ def upsert_agent_output(cur, post_id, agent_name, output_type, content):
 
 
 def save_all(cur, post_id, raw_text):
+    title = extract_section(raw_text, "TITLE")
     strategy = extract_section(raw_text, "STRATEGY")
     video = extract_section(raw_text, "VIDEO")
     design = extract_section(raw_text, "DESIGN")
@@ -168,9 +177,10 @@ def save_all(cur, post_id, raw_text):
 
     cur.execute("""
         UPDATE posts
-        SET caption_ig = ?, caption_tiktok = ?, hashtags = ?
+        SET title = ?, caption_ig = ?, caption_tiktok = ?, hashtags = ?
         WHERE id = ?
     """, (
+        title,
         instagram,
         tiktok,
         hashtags,
