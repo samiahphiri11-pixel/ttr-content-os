@@ -833,23 +833,22 @@ with workflow_col1:
                 input=monday_date + "\n",
                 capture_output=True,
                 text=True,
+                cwd="."
             )
+
+        st.write("Return code:", result.returncode)
+
+        with st.expander("View logs: Full Week Workflow", expanded=True):
+            st.markdown("### STDOUT")
+            st.text(result.stdout if result.stdout else "[no stdout]")
+
+            st.markdown("### STDERR")
+            st.text(result.stderr if result.stderr else "[no stderr]")
 
         if result.returncode == 0:
             st.success("Full Week Workflow finished!")
-            with st.expander("View logs: Full Week Workflow", expanded=True):
-                if result.stdout:
-                    st.text(result.stdout)
-                if result.stderr:
-                    st.text("ERRORS:\n" + result.stderr)
-            st.rerun()
         else:
             st.error("Full Week Workflow had errors.")
-            with st.expander("View logs: Full Week Workflow", expanded=True):
-                if result.stdout:
-                    st.text(result.stdout)
-                if result.stderr:
-                    st.text("ERRORS:\n" + result.stderr)
 
 with workflow_col2:
     if st.button("🚀 Run AI Content Team", key="run_ai_team", use_container_width=True):
