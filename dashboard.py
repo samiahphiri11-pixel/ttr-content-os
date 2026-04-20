@@ -7,7 +7,6 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 import streamlit.components.v1 as components
-import supabase
 
 
 if "player_filter" not in st.session_state:
@@ -1005,10 +1004,6 @@ for _, post in filtered_posts.iterrows():
         # 🔥 When clicked → update database
         if checked != is_done:
             new_status = "done" if checked else "todo"
-
-            supabase.table("tasks").update({
-                "status": new_status
-            }).eq("id", task_id).execute()
 
             st.rerun()
 
