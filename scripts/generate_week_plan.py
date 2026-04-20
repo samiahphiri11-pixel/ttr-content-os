@@ -138,9 +138,11 @@ def main():
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
 
-    # Clear old posts so you regenerate the week fresh each time
+    # Clear old weekly data so each run starts fresh
+    cur.execute("DELETE FROM agent_outputs")
+    cur.execute("DELETE FROM tasks")
     cur.execute("DELETE FROM posts")
-    print("Old posts cleared.")
+    print("Old posts, tasks, and agent outputs cleared.")
 
     used_folders = set()
 

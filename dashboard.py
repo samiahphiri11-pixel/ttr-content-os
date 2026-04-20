@@ -832,6 +832,7 @@ with workflow_col1:
             "Full Week Workflow",
             input_text=monday_date + "\n",
         )
+        st.rerun()
 
 with workflow_col2:
     if st.button("🚀 Run AI Content Team", key="run_ai_team", use_container_width=True):
@@ -839,6 +840,7 @@ with workflow_col2:
             [sys.executable, "scripts/auto_generate_weekly_outputs.py"],
             "AI Content Team",
         )
+        st.rerun()
 
 st.divider()
 st.markdown('<div class="section-title">🏁 Sunday Match Day Plan</div>', unsafe_allow_html=True)
