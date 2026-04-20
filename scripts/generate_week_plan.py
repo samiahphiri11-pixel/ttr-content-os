@@ -16,7 +16,7 @@ WEEKLY_STRUCTURE = [
 
 def title_from_folder(folder_name: str, day: str) -> str:
     clean_name = folder_name.replace("_", " ").strip()
-    return f"{day} - {clean_name}"
+    return f"{day} - {pillar_label} Post"
 
 
 def score_value(value: str) -> int:
@@ -154,7 +154,7 @@ def main():
 
         if source_folder:
             used_folders.add(source_folder)
-            title = title_from_folder(source_folder, day)
+            title = title_from_folder(source_folder, day, pillar)
         else:
             title = f"{day} - {pillar} content idea"
 
