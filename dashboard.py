@@ -1,6 +1,7 @@
 import base64
 import sqlite3
 import subprocess
+import sys
 from datetime import date
 from pathlib import Path
 
@@ -363,19 +364,19 @@ def get_ready_posts(posts_df, tasks_df, outputs_df):
 
 def export_buffer_csv(mode, filtered_posts_df=None, ready_posts_df=None):
     if mode == "full":
-        command = ["python3", "scripts/export_buffer_csv.py"]
+        command = [sys.executable, "scripts/export_buffer_csv.py"]
 
     elif mode == "ready":
         if ready_posts_df is None or ready_posts_df.empty:
             st.warning("No ready posts to export.")
             return
-        command = ["python3", "scripts/export_buffer_csv.py", "ready"]
+        command = [sys.executable, "scripts/export_buffer_csv.py", "ready"]
 
     elif mode == "filtered":
         if filtered_posts_df is None or filtered_posts_df.empty:
             st.warning("No filtered posts to export.")
             return
-        command = ["python3", "scripts/export_buffer_csv.py", "filtered"]
+        command = [sys.executable, "scripts/export_buffer_csv.py", "filtered"]
 
     else:
         st.error("Invalid export mode.")
@@ -827,7 +828,7 @@ with workflow_col1:
 
     if st.button("🗓️ Run Full Week Workflow", key="run_full_week", use_container_width=True):
         run_command(
-            ["python3", "scripts/run_full_week.py"],
+            [sys.executable, "scripts/run_full_week.py"],
             "Full Week Workflow",
             input_text=monday_date + "\n",
         )
@@ -835,7 +836,7 @@ with workflow_col1:
 with workflow_col2:
     if st.button("🚀 Run AI Content Team", key="run_ai_team", use_container_width=True):
         run_command(
-            ["python3", "scripts/auto_generate_weekly_outputs.py"],
+            [sys.executable, "scripts/auto_generate_weekly_outputs.py"],
             "AI Content Team",
         )
 
@@ -941,7 +942,7 @@ for _, post in filtered_posts.iterrows():
                 use_container_width=True,
             ):
                 run_command(
-                    ["python3", "scripts/auto_generate_single_post.py", str(post_id)],
+                    [sys.executable, "scripts/auto_generate_single_post.py", str(post_id)],
                     f"Rerun AI for Post {post_id}",
                 )
                 st.rerun()
@@ -953,7 +954,7 @@ for _, post in filtered_posts.iterrows():
                 use_container_width=True,
             ):
                 run_command(
-                    ["python3", "scripts/export_post_package.py", str(post_id)],
+                    [sys.executable, "scripts/export_post_package.py", str(post_id)],
                     f"Export Package for Post {post_id}",
                 )
 
