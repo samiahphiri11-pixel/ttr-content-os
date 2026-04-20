@@ -27,16 +27,29 @@ def build_prompt(post: tuple) -> str:
     return f"""
 You are an elite content team for TT&R Elite.
 
-Create content outputs for this post.
+Your job is to create a FRESH weekly content concept for this post.
+Do NOT recycle common generic ideas from previous weeks unless the source material clearly calls for it.
+Avoid repeating phrases like "every rep counts" unless the source folder strongly suggests that exact theme.
 
-Post:
+Brand:
+TT&R Elite is a soccer performance brand focused on elite player development, mindset, discipline, training quality, confidence, and real growth.
+
+Post info:
+- Post ID: {post_id}
 - Day: {day}
-- Title: {title}
+- Working title: {title}
 - Pillar: {pillar}
 - Format: {post_format}
 - Goal: {goal}
 - Source folder: {source_folder}
 - Status: {status}
+
+Freshness rules:
+- Make this week's angle feel NEW
+- Do not repeat the same concept used last week
+- Keep the pillar the same, but change the angle, hook, and framing
+- Use the source folder as inspiration, not as the final repeated concept
+- Make it specific, modern, athletic, and useful for TT&R Elite
 
 IMPORTANT:
 Return your response using ONLY these exact section tags.
@@ -187,6 +200,10 @@ def main():
 
     conn = get_connection()
     cur = conn.cursor()
+    
+    cur.execute("DELETE FROM agent_outputs")
+    cur.execute("UPDATE posts SET caption_ig = NULL, caption_tiktok = NULL, hashtags = NULL")
+    conn.commit()
 
     cur.execute("""
         SELECT
@@ -209,13 +226,6 @@ def main():
         post_id = post[0]
 
         print(f"[{i}/{len(posts)}] Processing Post {post_id}...")
-
-        cur.execute("SELECT caption_ig FROM posts WHERE id = ?", (post_id,))
-        existing = cur.fetchone()[0]
-
-        if existing and str(existing).strip():
-            print("⏭️ Skipped (already generated)\n")
-            continue
 
         try:
             print("⚡ Sending to Claude...")
