@@ -131,6 +131,9 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
     best_folder = scored_rows[0][0]
     return best_folder
 
+def is_ai_led_pillar(pillar: str) -> bool:
+    return pillar in {"mindset", "wellness"}
+
 
 def main():
     print("Starting smart weekly planner...")
@@ -150,13 +153,17 @@ def main():
         post_format = day_plan["format"]
         goal = day_plan["goal"]
 
-        source_folder = get_best_folder_for_day(cur, pillar, post_format, used_folders)
-
-        if source_folder:
-            used_folders.add(source_folder)
-            title = title_from_folder(source_folder, day, pillar)
+        if is_ai_led_pillar(pillar):
+            source_folder = None
+            title = f"{day} - {pillar.replace('_', ' ').title()} Post"
         else:
-            title = f"{day} - {pillar} content idea"
+            source_folder = get_best_folder_for_day(cur, pillar, post_format, used_folders)
+
+            if source_folder:
+                used_folders.add(source_folder)
+                title = title_from_folder(source_folder, day, pillar)
+            else:
+                title = f"{day} - {pillar.replace('_', ' ').title()} Post"
 
         graphic_needed = 1 if post_format == "graphic" else 0
 
