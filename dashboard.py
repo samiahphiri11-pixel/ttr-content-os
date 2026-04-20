@@ -827,12 +827,29 @@ with workflow_col1:
     )
 
     if st.button("🗓️ Run Full Week Workflow", key="run_full_week", use_container_width=True):
-        run_command(
-            [sys.executable, "scripts/run_full_week.py"],
-            "Full Week Workflow",
-            input_text=monday_date + "\n",
-        )
-        st.rerun()
+        with st.spinner("Running Full Week Workflow..."):
+            result = subprocess.run(
+                [sys.executable, "scripts/run_full_week.py"],
+                input=monday_date + "\n",
+                capture_output=True,
+                text=True,
+            )
+
+        if result.returncode == 0:
+            st.success("Full Week Workflow finished!")
+            with st.expander("View logs: Full Week Workflow", expanded=True):
+                if result.stdout:
+                    st.text(result.stdout)
+                if result.stderr:
+                    st.text("ERRORS:\n" + result.stderr)
+            st.rerun()
+        else:
+            st.error("Full Week Workflow had errors.")
+            with st.expander("View logs: Full Week Workflow", expanded=True):
+                if result.stdout:
+                    st.text(result.stdout)
+                if result.stderr:
+                    st.text("ERRORS:\n" + result.stderr)
 
 with workflow_col2:
     if st.button("🚀 Run AI Content Team", key="run_ai_team", use_container_width=True):
