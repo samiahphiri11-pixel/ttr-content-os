@@ -1,0 +1,189 @@
+TT&R ELITE WEEKLY DASHBOARD
+================================================================================
+
+OVERVIEW
+--------------------------------------------------------------------------------
+Total Posts: 7
+Total Tasks: 28
+Todo Tasks: 28
+In Progress Tasks: 0
+Done Tasks: 0
+
+Completion Rate: 0.0%
+
+WEEKLY POSTS
+================================================================================
+
+[Post 114] Monday
+--------------------------------------------------------------------------------
+Title: Monday - evey rep counts
+Pillar: mindset
+Format: graphic
+Goal: engagement
+Source Folder: evey rep counts
+Post Status: planned
+
+Tasks:
+- [337] create graphic | todo
+- [338] write caption | todo
+- [339] make stories | todo
+- [340] schedule in buffer | todo
+
+Prompt Files:
+- post_114_de_bruyne_prompt.txt
+- post_114_mbappe_prompt.txt
+- post_114_messi_prompt.txt
+- post_114_neymar_prompt.txt
+- post_114_xavi_prompt.txt
+
+[Post 115] Tuesday
+--------------------------------------------------------------------------------
+Title: Tuesday - Skill OTW (stepover-stepback-iniesta)
+Pillar: skills
+Format: video
+Goal: followers
+Source Folder: Skill OTW (stepover-stepback-iniesta)
+Post Status: planned
+
+Tasks:
+- [341] edit video | todo
+- [342] write caption | todo
+- [343] make stories | todo
+- [344] schedule in buffer | todo
+
+Prompt Files:
+- post_115_de_bruyne_prompt.txt
+- post_115_mbappe_prompt.txt
+- post_115_messi_prompt.txt
+- post_115_modric_prompt.txt
+- post_115_ronaldo_prompt.txt
+- post_115_xavi_prompt.txt
+
+[Post 116] Wednesday
+--------------------------------------------------------------------------------
+Title: Wednesday - warmups
+Pillar: wellness
+Format: graphic
+Goal: saves
+Source Folder: warmups
+Post Status: planned
+
+Tasks:
+- [345] create graphic | todo
+- [346] write caption | todo
+- [347] make stories | todo
+- [348] schedule in buffer | todo
+
+Prompt Files:
+- post_116_de_bruyne_prompt.txt
+- post_116_mbappe_prompt.txt
+- post_116_messi_prompt.txt
+- post_116_neymar_prompt.txt
+- post_116_xavi_prompt.txt
+
+[Post 117] Thursday
+--------------------------------------------------------------------------------
+Title: Thursday - Trainees in game
+Pillar: gameplay
+Format: video
+Goal: engagement
+Source Folder: Trainees in game 
+Post Status: planned
+
+Tasks:
+- [349] edit video | todo
+- [350] write caption | todo
+- [351] make stories | todo
+- [352] schedule in buffer | todo
+
+Prompt Files:
+- post_117_de_bruyne_prompt.txt
+- post_117_mbappe_prompt.txt
+- post_117_messi_prompt.txt
+- post_117_modric_prompt.txt
+- post_117_ronaldo_prompt.txt
+- post_117_xavi_prompt.txt
+
+[Post 118] Friday
+--------------------------------------------------------------------------------
+Title: Friday - Bloopers 2
+Pillar: viral
+Format: video
+Goal: followers
+Source Folder: Bloopers 2
+Post Status: planned
+
+Tasks:
+- [353] edit video | todo
+- [354] write caption | todo
+- [355] make stories | todo
+- [356] schedule in buffer | todo
+
+Prompt Files:
+- post_118_de_bruyne_prompt.txt
+- post_118_mbappe_prompt.txt
+- post_118_messi_prompt.txt
+- post_118_modric_prompt.txt
+- post_118_ronaldo_prompt.txt
+- post_118_xavi_prompt.txt
+
+[Post 119] Saturday
+--------------------------------------------------------------------------------
+Title: Saturday - really nice vids from camp
+Pillar: real_training
+Format: video
+Goal: conversion
+Source Folder: really nice vids from camp
+Post Status: planned
+
+Tasks:
+- [357] edit video | todo
+- [358] write caption | todo
+- [359] make stories | todo
+- [360] schedule in buffer | todo
+
+Prompt Files:
+- post_119_de_bruyne_prompt.txt
+- post_119_mbappe_prompt.txt
+- post_119_messi_prompt.txt
+- post_119_modric_prompt.txt
+- post_119_ronaldo_prompt.txt
+- post_119_xavi_prompt.txt
+
+[Post 120] Sunday
+--------------------------------------------------------------------------------
+Title: Sunday - Pics
+Pillar: community
+Format: mix
+Goal: engagement
+Source Folder: Pics
+Post Status: planned
+
+Tasks:
+- [361] create content | todo
+- [362] write caption | todo
+- [363] make stories | todo
+- [364] schedule in buffer | todo
+
+Prompt Files:
+- post_120_de_bruyne_prompt.txt
+- post_120_mbappe_prompt.txt
+- post_120_messi_prompt.txt
+- post_120_modric_prompt.txt
+- post_120_neymar_prompt.txt
+- post_120_ronaldo_prompt.txt
+- post_120_xavi_prompt.txt
+
+================================================================================
+NEXT ACTIONS
+--------------------------------------------------------------------------------
+- Task 337: create graphic for Monday - Monday - evey rep counts
+- Task 338: write caption for Monday - Monday - evey rep counts
+- Task 339: make stories for Monday - Monday - evey rep counts
+- Task 340: schedule in buffer for Monday - Monday - evey rep counts
+- Task 341: edit video for Tuesday - Tuesday - Skill OTW (stepover-stepback-iniesta)
+- Task 342: write caption for Tuesday - Tuesday - Skill OTW (stepover-stepback-iniesta)
+- Task 343: make stories for Tuesday - Tuesday - Skill OTW (stepover-stepback-iniesta)
+- Task 344: schedule in buffer for Tuesday - Tuesday - Skill OTW (stepover-stepback-iniesta)
+- Task 345: create graphic for Wednesday - Wednesday - warmups
+- Task 346: write caption for Wednesday - Wednesday - warmups
