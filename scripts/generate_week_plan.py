@@ -14,8 +14,8 @@ WEEKLY_STRUCTURE = [
 ]
 
 
-def title_from_folder(folder_name: str, day: str) -> str:
-    clean_name = folder_name.replace("_", " ").strip()
+def title_from_folder(folder_name: str, day: str, pillar: str) -> str:
+    pillar_label = pillar.replace("_", " ").strip().title()
     return f"{day} - {pillar_label} Post"
 
 
