@@ -176,16 +176,36 @@ def save_all(cur, post_id, raw_text):
     insight = extract_section(raw_text, "INSIGHT")
 
     cur.execute("""
-        UPDATE posts
-        SET title = ?, caption_ig = ?, caption_tiktok = ?, hashtags = ?
+        SELECT pillar
+        FROM posts
         WHERE id = ?
-    """, (
-        title,
-        instagram,
-        tiktok,
-        hashtags,
-        post_id
-    ))
+    """, (post_id,))
+    pillar_row = cur.fetchone()
+    pillar = pillar_row[0] if pillar_row else ""
+
+    if pillar in {"mindset", "wellness"} and title:
+        cur.execute("""
+            UPDATE posts
+            SET title = ?, caption_ig = ?, caption_tiktok = ?, hashtags = ?
+            WHERE id = ?
+        """, (
+            title,
+            instagram,
+            tiktok,
+            hashtags,
+            post_id
+        ))
+    else:
+        cur.execute("""
+            UPDATE posts
+            SET caption_ig = ?, caption_tiktok = ?, hashtags = ?
+            WHERE id = ?
+        """, (
+            instagram,
+            tiktok,
+            hashtags,
+            post_id
+        ))
 
     upsert_agent_output(cur, post_id, "Messi", "strategy", strategy)
     upsert_agent_output(cur, post_id, "Ronaldo", "video_plan", video)
