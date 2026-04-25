@@ -16,7 +16,19 @@ WEEKLY_STRUCTURE = [
 
 def title_from_folder(folder_name: str, day: str, pillar: str) -> str:
     clean_name = folder_name.replace("_", " ").strip()
-    return f"{day} - {clean_name}"
+
+    # If folder already starts with the day, remove it to avoid:
+    # Tuesday — Tuesday - Skill Combo
+    lower_clean = clean_name.lower()
+    lower_day = day.lower()
+
+    if lower_clean.startswith(lower_day):
+        clean_name = clean_name[len(day):].strip()
+
+        if clean_name.startswith("-"):
+            clean_name = clean_name[1:].strip()
+
+    return clean_name
 
 
 def score_value(value: str) -> int:
