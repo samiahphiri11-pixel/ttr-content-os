@@ -918,6 +918,15 @@ for i, player in enumerate(players):
 
 st.divider()
 st.markdown('<div class="section-title">📋 Weekly Content Output</div>', unsafe_allow_html=True)
+
+col1, col2 = st.columns([3, 1])
+
+with col2:
+    if st.button("📤 Sync to Notion"):
+        import subprocess, sys
+        subprocess.run([sys.executable, "scripts/sync_to_notion.py"])
+        st.success("Synced!")
+        
 st.caption(f"Current filter: {st.session_state.player_filter}")
 
 filtered_posts = posts_df.copy()
