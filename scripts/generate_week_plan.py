@@ -145,15 +145,9 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
 
 def is_ai_led_pillar(pillar: str) -> bool:
     return pillar in {"mindset", "wellness"}
-if is_ai_led_pillar(pillar):
-    source_folder = None
-    title = f"{day} - {pillar.replace('_', ' ').title()} Post"
-else:
-    source_folder = get_best_folder_for_day(cur, pillar, post_format, used_folders)
 
 
 def main():
-    print("Starting smart weekly planner...")
 
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
