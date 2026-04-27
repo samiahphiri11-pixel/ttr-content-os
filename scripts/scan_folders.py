@@ -48,6 +48,7 @@ def main():
     # Clear old scanned folder/clip data so the DB matches your current folders
     cur.execute("DELETE FROM clips")
     cur.execute("DELETE FROM content_folders")
+    cur.execute("DELETE FROM folder_usage")
 
     for day_folder in RAW_CONTENT_DIR.iterdir():
         if not day_folder.is_dir():
