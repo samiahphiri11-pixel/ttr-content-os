@@ -11,8 +11,32 @@ DB_PATH = Path("data/content.db")
 def get_connection():
     return sqlite3.connect(DB_PATH)
 
+def load_active_campaign():
+    conn = get_connection()
+    cur = conn.cursor()
 
-def build_prompt(post: tuple) -> str:
+    cur.execute("""
+        SELECT
+            campaign_name,
+            campaign_goal,
+            campaign_start_date,
+            campaign_end_date,
+            campaign_priority,
+            campaign_cta,
+            campaign_notes
+        FROM campaigns
+        WHERE campaign_active = 1
+        ORDER BY id DESC
+        LIMIT 1
+    """)
+
+    row = cur.fetchone()
+    conn.close()
+
+    return row
+
+
+def build_prompt(post: tuple, campaign=None) -> str:
     (
         post_id,
         day,
@@ -24,8 +48,41 @@ def build_prompt(post: tuple) -> str:
         status,
     ) = post
 
+    campaign_text = ""
+
+    if campaign:
+        (
+            campaign_name,
+            campaign_goal,
+            campaign_start,
+            campaign_end,
+            campaign_priority,
+            campaign_cta,
+            campaign_notes
+        ) = campaign
+
+        campaign_text = f"""
+
+ACTIVE CAMPAIGN:
+- Name: {campaign_name}
+- Goal: {campaign_goal}
+- Dates: {campaign_start} to {campaign_end}
+- Priority: {campaign_priority}
+- CTA: {campaign_cta}
+- Notes: {campaign_notes}
+
+INSTRUCTIONS:
+- Naturally incorporate this campaign where relevant
+- Do NOT force it into every post
+- Add CTA only when it makes sense
+- If the post is community or training, lightly connect to the campaign
+- Generate 2–3 supporting story ideas related to the campaign
+"""
+
     return f"""
 You are an elite content team for TT&R Elite.
+
+{campaign_text}
 
 Create a fresh weekly concept and a better final title than the current working title.
 
@@ -250,6 +307,8 @@ def main():
     """)
     posts = cur.fetchall()
 
+    campaign = load_active_campaign()
+
     print("Starting fast auto-generation...\n")
 
     for i, post in enumerate(posts, start=1):
@@ -259,7 +318,7 @@ def main():
 
         try:
             print("⚡ Sending to Claude...")
-            prompt = build_prompt(post)
+            prompt = build_prompt(post, campaign)
 
             response = call_claude(client, model, prompt)
 

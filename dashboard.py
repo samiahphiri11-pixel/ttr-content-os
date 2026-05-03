@@ -312,6 +312,75 @@ def load_analytics():
     conn.close()
     return df
 
+def load_active_campaign():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            id,
+            campaign_name,
+            campaign_goal,
+            campaign_start_date,
+            campaign_end_date,
+            campaign_priority,
+            campaign_cta,
+            campaign_notes,
+            campaign_active
+        FROM campaigns
+        WHERE campaign_active = 1
+        ORDER BY id DESC
+        LIMIT 1
+    """)
+
+    row = cur.fetchone()
+    conn.close()
+
+    return row
+
+
+def save_campaign(
+    campaign_name,
+    campaign_goal,
+    campaign_start_date,
+    campaign_end_date,
+    campaign_priority,
+    campaign_cta,
+    campaign_notes,
+    campaign_active,
+):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    if campaign_active:
+        cur.execute("UPDATE campaigns SET campaign_active = 0")
+
+    cur.execute("""
+        INSERT INTO campaigns (
+            campaign_name,
+            campaign_goal,
+            campaign_start_date,
+            campaign_end_date,
+            campaign_priority,
+            campaign_cta,
+            campaign_notes,
+            campaign_active
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+    """, (
+        campaign_name,
+        campaign_goal,
+        campaign_start_date,
+        campaign_end_date,
+        campaign_priority,
+        campaign_cta,
+        campaign_notes,
+        1 if campaign_active else 0,
+    ))
+
+    conn.commit()
+    conn.close()
+
 
 def run_command(command, label, input_text=None):
     with st.spinner(label):
@@ -797,6 +866,7 @@ posts_df = load_posts()
 tasks_df = load_tasks()
 outputs_df = load_agent_outputs()
 analytics_df = load_analytics()
+active_campaign = load_active_campaign()
 
 ready_posts_df = get_ready_posts(posts_df, tasks_df, outputs_df)
 missing_df = build_missing_items(posts_df, tasks_df, outputs_df)
@@ -815,6 +885,59 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+st.markdown('<div class="section-title">📣 Campaign Mode</div>', unsafe_allow_html=True)
+st.caption("Use this when TT&R is promoting a camp, tournament, private training, tryouts, or special offer.")
+
+with st.container(border=True):
+    campaign_active = st.checkbox("Campaign Mode ON", value=active_campaign is not None)
+
+    default_name = active_campaign[1] if active_campaign else ""
+    default_goal = active_campaign[2] if active_campaign else ""
+    default_start = active_campaign[3] if active_campaign else ""
+    default_end = active_campaign[4] if active_campaign else ""
+    default_priority = active_campaign[5] if active_campaign else "Medium"
+    default_cta = active_campaign[6] if active_campaign else ""
+    default_notes = active_campaign[7] if active_campaign else ""
+
+    c1, c2 = st.columns(2)
+
+    with c1:
+        campaign_name = st.text_input("Campaign Name", value=default_name)
+        campaign_goal = st.text_input("Campaign Goal", value=default_goal)
+        campaign_start_date = st.text_input("Start Date", value=default_start)
+
+    with c2:
+        campaign_end_date = st.text_input("End Date", value=default_end)
+        campaign_priority = st.selectbox(
+            "Priority",
+            ["Low", "Medium", "High"],
+            index=["Low", "Medium", "High"].index(default_priority)
+            if default_priority in ["Low", "Medium", "High"]
+            else 1,
+        )
+        campaign_cta = st.text_input("Campaign CTA", value=default_cta)
+
+    campaign_notes = st.text_area("Campaign Notes", value=default_notes)
+
+    if st.button("💾 Save Campaign Settings", use_container_width=True):
+        save_campaign(
+            campaign_name,
+            campaign_goal,
+            campaign_start_date,
+            campaign_end_date,
+            campaign_priority,
+            campaign_cta,
+            campaign_notes,
+            campaign_active,
+        )
+        st.success("Campaign settings saved.")
+        st.rerun()
+
+if active_campaign:
+    st.success(f"Campaign Mode Active: {active_campaign[1]}")
+else:
+    st.info("Campaign Mode is currently off.")
 
 st.markdown('<div class="section-title">🗓️ Week Setup</div>', unsafe_allow_html=True)
 
