@@ -84,13 +84,12 @@ def main():
 
             cur.execute("""
                 INSERT OR IGNORE INTO content_folders
-                (folder_name, folder_path, content_pillar, cooldown_weeks)
-                VALUES (?, ?, ?, ?)
+                (folder_name, folder_path, content_pillar)
+                VALUES (?, ?, ?)
             """, (
                 folder_name,
                 folder_path,
-                pillar,
-                get_default_cooldown(pillar)
+                pillar
             ))
 
             for file in content_folder.iterdir():
