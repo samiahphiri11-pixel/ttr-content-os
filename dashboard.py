@@ -1449,6 +1449,67 @@ st.dataframe(
     hide_index=True,
 )
 
+st.markdown('<div class="section-title">📊 Log Post Performance</div>', unsafe_allow_html=True)
+st.caption("Enter performance after posting to help the system learn what works.")
+
+with st.container(border=True):
+    post_options = posts_df[["id", "title"]].values.tolist()
+    post_map = {f"{title} (ID {pid})": pid for pid, title in post_options}
+
+    selected_post_label = st.selectbox("Select Post", list(post_map.keys()))
+    selected_post_id = post_map[selected_post_label]
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        views = st.number_input("Views", min_value=0, step=1)
+        likes = st.number_input("Likes", min_value=0, step=1)
+
+    with col2:
+        comments = st.number_input("Comments", min_value=0, step=1)
+        shares = st.number_input("Shares", min_value=0, step=1)
+
+    with col3:
+        saves = st.number_input("Saves", min_value=0, step=1)
+        follows = st.number_input("Follows Gained", min_value=0, step=1)
+
+    notes = st.text_area("Notes (optional)")
+
+    if st.button("💾 Save Performance", use_container_width=True):
+        conn = get_connection()
+        cur = conn.cursor()
+
+        cur.execute("""
+            INSERT INTO analytics (
+                post_id,
+                platform,
+                views,
+                likes,
+                comments,
+                shares,
+                saves,
+                follows_gained,
+                notes
+            )
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """, (
+            selected_post_id,
+            "instagram",
+            views,
+            likes,
+            comments,
+            shares,
+            saves,
+            follows,
+            notes
+        ))
+
+        conn.commit()
+        conn.close()
+
+        st.success("Performance saved.")
+        st.rerun()
+
 if not analytics_df.empty:
     st.divider()
     st.markdown('<div class="section-title">📈 Analytics Snapshot</div>', unsafe_allow_html=True)
@@ -1469,3 +1530,23 @@ if not analytics_df.empty:
         use_container_width=True,
         hide_index=True,
     )
+
+    st.divider()
+st.markdown('<div class="section-title">🧠 Weekly Insights</div>', unsafe_allow_html=True)
+
+if analytics_df.empty:
+    st.info("No analytics data yet.")
+else:
+    # Best by views
+    top_post = analytics_df.sort_values(by="views", ascending=False).iloc[0]
+
+    # Best by saves
+    best_save_post = analytics_df.sort_values(by="saves", ascending=False).iloc[0]
+
+    st.write(f"🔥 Best performing post (views): {top_post['title']}")
+    st.write(f"💾 Most saved post: {best_save_post['title']}")
+
+    st.write("### Key Takeaways")
+    st.write("- Replicate the format of the highest performing post")
+    st.write("- Focus more on content that gets saves and shares")
+    st.write("- Improve hooks on lower performing posts")

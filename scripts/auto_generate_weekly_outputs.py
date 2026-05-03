@@ -175,7 +175,17 @@ Write the story sequence here.
 Write repurpose ideas here.
 
 [[INSIGHT]]
-Write analytics insight here.
+Analyze this post for performance potential.
+
+Also consider:
+- What type of content usually performs best for this pillar
+- What metric matters most (views, saves, shares, follows)
+- What would make this post outperform similar content
+- One improvement to increase performance
+- One A/B test idea
+
+If campaign mode is active:
+- Explain how this post contributes to the campaign goal
 """
 
 
