@@ -33,6 +33,20 @@ def get_content_type(file_suffix: str) -> str:
 def detect_pillar_from_day_folder(day_folder: str) -> str:
     return DAY_FOLDER_MAP.get(day_folder.lower(), "general")
 
+def get_default_cooldown(pillar: str) -> int:
+    if pillar == "skills":
+        return 3
+    elif pillar == "gameplay":
+        return 3
+    elif pillar == "viral":
+        return 2
+    elif pillar == "real_training":
+        return 2
+    elif pillar == "community":
+        return 2
+    else:
+        return 2
+
 
 def folder_has_media(folder: Path) -> bool:
     for file in folder.iterdir():
@@ -70,12 +84,13 @@ def main():
 
             cur.execute("""
                 INSERT OR IGNORE INTO content_folders
-                (folder_name, folder_path, content_pillar)
-                VALUES (?, ?, ?)
+                (folder_name, folder_path, content_pillar, cooldown_weeks)
+                VALUES (?, ?, ?, ?)
             """, (
                 folder_name,
                 folder_path,
-                pillar
+                pillar,
+                get_default_cooldown(pillar)
             ))
 
             for file in content_folder.iterdir():

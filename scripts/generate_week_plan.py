@@ -1,4 +1,5 @@
 import sqlite3
+from datetime import datetime, timedelta
 from pathlib import Path
 
 DB_PATH = Path("data/content.db")
@@ -17,7 +18,6 @@ WEEKLY_STRUCTURE = [
 def title_from_folder(folder_name: str, day: str, pillar: str) -> str:
     clean_name = folder_name.replace("_", " ").strip()
 
-    # Remove duplicate day if folder already includes it
     lower_clean = clean_name.lower()
     lower_day = day.lower()
 
@@ -27,8 +27,11 @@ def title_from_folder(folder_name: str, day: str, pillar: str) -> str:
     if clean_name.startswith("-"):
         clean_name = clean_name[1:].strip()
 
-    # Final title format (ONLY ONE DAY)
     return f"{day} — {clean_name}"
+
+
+def is_ai_led_pillar(pillar: str) -> bool:
+    return pillar in {"mindset", "wellness"}
 
 
 def score_value(value: str) -> int:
@@ -39,12 +42,27 @@ def score_value(value: str) -> int:
 
     if value == "high":
         return 3
-    elif value == "medium":
+    if value == "medium":
         return 2
-    elif value == "low":
+    if value == "low":
         return 1
 
     return 0
+
+
+def is_on_cooldown(last_used_date, cooldown_weeks) -> bool:
+    if not last_used_date:
+        return False
+
+    if not cooldown_weeks:
+        cooldown_weeks = 2
+
+    try:
+        last_used = datetime.strptime(last_used_date, "%Y-%m-%d")
+    except ValueError:
+        return False
+
+    return datetime.now() < last_used + timedelta(weeks=int(cooldown_weeks))
 
 
 def score_folder_for_post(folder_data: tuple, post_format: str) -> int:
@@ -56,19 +74,19 @@ def score_folder_for_post(folder_data: tuple, post_format: str) -> int:
         face_cam,
         carousel_ready,
         priority_level,
-        usage_count
+        usage_count,
+        last_used_date,
+        cooldown_weeks,
     ) = folder_data
 
     score = 0
 
-    # Base quality scoring
     score += score_value(priority_level)
     score += score_value(hook_strength)
 
     best_use = (best_use or "").lower()
     usage_count = usage_count or 0
 
-    # Match best_use to post format
     if post_format == "video" and best_use in {"reel", "video"}:
         score += 3
     elif post_format == "graphic" and best_use in {"graphic", "carousel"}:
@@ -76,7 +94,6 @@ def score_folder_for_post(folder_data: tuple, post_format: str) -> int:
     elif post_format == "mix" and best_use in {"mix", "carousel", "video", "reel"}:
         score += 2
 
-    # Extra bonuses
     if post_format in {"graphic", "mix"} and carousel_ready == 1:
         score += 2
 
@@ -86,7 +103,6 @@ def score_folder_for_post(folder_data: tuple, post_format: str) -> int:
     if post_format == "video" and face_cam == 1:
         score += 1
 
-    # Penalize folders that have already been used more often
     score -= usage_count
 
     return score
@@ -102,7 +118,9 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
             folder_notes.face_cam,
             folder_notes.carousel_ready,
             folder_notes.priority_level,
-            COUNT(folder_usage.id) as usage_count
+            COUNT(folder_usage.id) as usage_count,
+            content_folders.last_used_date,
+            content_folders.cooldown_weeks
         FROM content_folders
         LEFT JOIN folder_notes
             ON content_folders.id = folder_notes.folder_id
@@ -116,7 +134,9 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
             folder_notes.voiceover_needed,
             folder_notes.face_cam,
             folder_notes.carousel_ready,
-            folder_notes.priority_level
+            folder_notes.priority_level,
+            content_folders.last_used_date,
+            content_folders.cooldown_weeks
         ORDER BY content_folders.folder_name
     """, (pillar,))
 
@@ -125,8 +145,14 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
     if not rows:
         return None
 
-    # Avoid using the same folder twice in the same weekly plan
-    available_rows = [row for row in rows if row[0] not in used_folders]
+    available_rows = [
+        row for row in rows
+        if row[0] not in used_folders and not is_on_cooldown(row[8], row[9])
+    ]
+
+    # Fallback: if everything is on cooldown, allow reuse instead of leaving the day empty.
+    if not available_rows:
+        available_rows = [row for row in rows if row[0] not in used_folders]
 
     if not available_rows:
         return None
@@ -137,22 +163,32 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
         score = score_folder_for_post(row, post_format)
         scored_rows.append((folder_name, score))
 
-    # Highest score wins
     scored_rows.sort(key=lambda x: x[1], reverse=True)
 
-    best_folder = scored_rows[0][0]
-    return best_folder
+    return scored_rows[0][0]
 
-def is_ai_led_pillar(pillar: str) -> bool:
-    return pillar in {"mindset", "wellness"}
+
+def mark_folder_used(cur, folder_name: str):
+    today = datetime.now().strftime("%Y-%m-%d")
+
+    cur.execute("""
+        UPDATE content_folders
+        SET last_used_date = ?
+        WHERE folder_name = ?
+    """, (today, folder_name))
+
+    cur.execute("""
+        INSERT INTO folder_usage (folder_name, used_at)
+        VALUES (?, ?)
+    """, (folder_name, today))
 
 
 def main():
+    print("Starting smart weekly planner...")
 
     conn = sqlite3.connect(DB_PATH)
     cur = conn.cursor()
 
-    # Clear old posts so you regenerate the week fresh each time
     cur.execute("DELETE FROM posts")
     print("Old posts cleared.")
 
@@ -172,6 +208,7 @@ def main():
 
             if source_folder:
                 used_folders.add(source_folder)
+                mark_folder_used(cur, source_folder)
                 title = title_from_folder(source_folder, day, pillar)
             else:
                 title = f"{day} - {pillar.replace('_', ' ').title()} Post"
@@ -200,7 +237,7 @@ def main():
             source_folder,
             graphic_needed,
             1,
-            "planned"
+            "planned",
         ))
 
         print(f"{day}: selected -> {source_folder}")
