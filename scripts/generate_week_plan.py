@@ -27,7 +27,7 @@ def title_from_folder(folder_name: str, day: str, pillar: str) -> str:
     if clean_name.startswith("-"):
         clean_name = clean_name[1:].strip()
 
-    return f"{day} — {clean_name}"
+    return clean_name
 
 
 def is_ai_led_pillar(pillar: str) -> bool:
@@ -202,7 +202,7 @@ def main():
 
         if is_ai_led_pillar(pillar):
             source_folder = None
-            title = f"{day} - {pillar.replace('_', ' ').title()} Post"
+            title = f"{pillar.replace('_', ' ').title()} Post"
         else:
             source_folder = get_best_folder_for_day(cur, pillar, post_format, used_folders)
 
@@ -211,7 +211,7 @@ def main():
                 mark_folder_used(cur, source_folder)
                 title = title_from_folder(source_folder, day, pillar)
             else:
-                title = f"{day} - {pillar.replace('_', ' ').title()} Post"
+                title = f"{pillar.replace('_', ' ').title()} Post"
 
         graphic_needed = 1 if post_format == "graphic" else 0
 
