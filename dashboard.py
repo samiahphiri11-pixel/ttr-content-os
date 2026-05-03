@@ -526,9 +526,15 @@ def get_sunday_match_day_plan(posts_df, tasks_df, outputs_df):
     missing_tasks = 0
     missing_outputs = 0
 
+    needs_editing = 0
+    ready_to_schedule = 0
+    scheduled = 0
+    posted = 0
+
     for _, post in posts_df.iterrows():
         post_id = post["id"]
         post_format = post["format"]
+        status = post["status"]
 
         post_tasks = tasks_df[tasks_df["post_id"] == post_id]
         post_outputs = outputs_df[outputs_df["post_id"] == post_id]
@@ -538,6 +544,15 @@ def get_sunday_match_day_plan(posts_df, tasks_df, outputs_df):
         has_hashtags = pd.notna(post["hashtags"]) and str(post["hashtags"]).strip() != ""
         has_outputs = len(post_outputs) > 0
         all_tasks_done = len(post_tasks) > 0 and (post_tasks["status"] == "done").all()
+
+        if status == "needs_editing":
+            needs_editing += 1
+        elif status == "ready_to_schedule":
+            ready_to_schedule += 1
+        elif status == "scheduled":
+            scheduled += 1
+        elif status == "posted":
+            posted += 1
 
         if not has_ig or (post_format == "video" and not has_tiktok) or not has_hashtags:
             missing_captions += 1
@@ -571,6 +586,7 @@ def get_sunday_match_day_plan(posts_df, tasks_df, outputs_df):
         "Review captions and hooks",
         "Finish video edits",
         "Approve or create graphics",
+        "Update post statuses",
         "Export posts for Buffer",
         "Queue the full week in Buffer",
     ]
@@ -582,6 +598,10 @@ def get_sunday_match_day_plan(posts_df, tasks_df, outputs_df):
         "missing_captions": missing_captions,
         "missing_tasks": missing_tasks,
         "missing_outputs": missing_outputs,
+        "needs_editing": needs_editing,
+        "ready_to_schedule": ready_to_schedule,
+        "scheduled": scheduled,
+        "posted": posted,
         "checklist": checklist,
     }
 
@@ -1023,6 +1043,10 @@ with plan_left:
 with plan_right:
     with st.container(border=True):
         st.metric("Ready for Buffer", f"{sunday_plan['ready_posts']}/{sunday_plan['total_posts']}")
+        st.metric("Needs Editing", sunday_plan["needs_editing"])
+        st.metric("Ready to Schedule", sunday_plan["ready_to_schedule"])
+        st.metric("Scheduled", sunday_plan["scheduled"])
+        st.metric("Posted", sunday_plan["posted"])
         st.metric("Posts Missing Captions", sunday_plan["missing_captions"])
         st.metric("Posts Missing Tasks", sunday_plan["missing_tasks"])
         st.metric("Posts Missing AI Outputs", sunday_plan["missing_outputs"])
@@ -1141,7 +1165,36 @@ for _, post in filtered_posts.iterrows():
         meta_col1, meta_col2, meta_col3, meta_col4 = st.columns(4)
         meta_col1.write(f"**Format:** {post['format']}")
         meta_col2.write(f"**Goal:** {post['goal']}")
-        meta_col3.write(f"**Status:** {post['status']}")
+        status_options = [
+            "planned",
+            "ai_generated",
+            "needs_editing",
+            "editing",
+            "ready_to_schedule",
+            "scheduled",
+            "posted",
+            "reviewed"
+        ]
+
+        current_status = post["status"] if post["status"] in status_options else "planned"
+
+        new_status = meta_col3.selectbox(
+            "Status",
+            status_options,
+            index=status_options.index(current_status),
+            key=f"status_{post_id}"
+        )
+
+        if new_status != current_status:
+            conn = get_connection()
+            cur = conn.cursor()
+            cur.execute(
+                "UPDATE posts SET status = ? WHERE id = ?",
+                (new_status, post_id)
+            )
+            conn.commit()
+            conn.close()
+            st.rerun()
         meta_col4.write(f"**Date:** {post['scheduled_date']}")
 
         # ALL view = show everything

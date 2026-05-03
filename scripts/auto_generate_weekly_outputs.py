@@ -242,27 +242,29 @@ def save_all(cur, post_id, raw_text):
 
     if pillar in {"mindset", "wellness"} and title:
         cur.execute("""
-            UPDATE posts
-            SET title = ?, caption_ig = ?, caption_tiktok = ?, hashtags = ?
-            WHERE id = ?
-        """, (
-            title,
-            instagram,
-            tiktok,
-            hashtags,
-            post_id
-        ))
+        UPDATE posts
+        SET title = ?, caption_ig = ?, caption_tiktok = ?, hashtags = ?, status = ?
+        WHERE id = ?
+    """, (
+        title,
+        instagram,
+        tiktok,
+        hashtags,
+        "ai_generated",
+        post_id
+    ))
     else:
         cur.execute("""
-            UPDATE posts
-            SET caption_ig = ?, caption_tiktok = ?, hashtags = ?
-            WHERE id = ?
-        """, (
-            instagram,
-            tiktok,
-            hashtags,
-            post_id
-        ))
+        UPDATE posts
+        SET caption_ig = ?, caption_tiktok = ?, hashtags = ?, status = ?
+        WHERE id = ?
+    """, (
+        instagram,
+        tiktok,
+        hashtags,
+        "ai_generated",
+        post_id
+    ))
 
     upsert_agent_output(cur, post_id, "Messi", "strategy", strategy)
     upsert_agent_output(cur, post_id, "Ronaldo", "video_plan", video)
