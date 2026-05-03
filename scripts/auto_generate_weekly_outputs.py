@@ -35,32 +35,7 @@ def load_active_campaign():
 
     return row
 
-def load_active_strategy():
-    conn = get_connection()
-    cur = conn.cursor()
-
-    cur.execute("""
-        SELECT
-            month_name,
-            monthly_theme,
-            main_goal,
-            secondary_goal,
-            priority_pillars,
-            campaign_focus,
-            strategy_notes
-        FROM monthly_strategy
-        WHERE strategy_active = 1
-        ORDER BY id DESC
-        LIMIT 1
-    """)
-
-    row = cur.fetchone()
-    conn.close()
-
-    return row
-
-
-def build_prompt(post: tuple, campaign=None, strategy=None) -> str:
+def build_prompt(post: tuple, campaign=None) -> str:
     (
         post_id,
         day,
@@ -73,37 +48,6 @@ def build_prompt(post: tuple, campaign=None, strategy=None) -> str:
     ) = post
 
     campaign_text = ""
-
-    strategy_text = ""
-
-    if strategy:
-        (
-            month,
-            theme,
-            main_goal,
-            secondary_goal,
-            pillars,
-            campaign_focus,
-            notes
-        ) = strategy
-
-        strategy_text = f"""
-
-MONTHLY STRATEGY:
-- Month: {month}
-- Theme: {theme}
-- Main Goal: {main_goal}
-- Secondary Goal: {secondary_goal}
-- Priority Pillars: {pillars}
-- Campaign Focus: {campaign_focus}
-- Notes: {notes}
-
-INSTRUCTIONS:
-- Align this post with the monthly theme
-- Support the main goal where possible
-- Prioritize the listed pillars
-- Keep content consistent across the week
-"""
     
     if campaign:
         (
@@ -137,7 +81,6 @@ INSTRUCTIONS:
     return f"""
 You are an elite content team for TT&R Elite.
 
-{strategy_text}
 {campaign_text}
 
 For VIDEO responses:
@@ -434,7 +377,6 @@ def main():
     posts = cur.fetchall()
 
     campaign = load_active_campaign()
-    strategy = load_active_strategy()
 
     print("Starting fast auto-generation...\n")
 
@@ -445,7 +387,7 @@ def main():
 
         try:
             print("⚡ Sending to Claude...")
-            prompt = build_prompt(post, campaign, strategy)
+            prompt = build_prompt(post, campaign)
 
             response = call_claude(client, model, prompt)
 
