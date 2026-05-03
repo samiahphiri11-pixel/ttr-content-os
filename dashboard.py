@@ -1234,7 +1234,6 @@ for _, post in filtered_posts.iterrows():
             st.write(hashtags if pd.notna(hashtags) and str(hashtags).strip() else "Not generated")
 
             st.markdown("### ✅ Tasks")
-
             if len(post_tasks) == 0:
                 st.info("No tasks found.")
             else:
@@ -1250,17 +1249,18 @@ for _, post in filtered_posts.iterrows():
                     )
 
                     if checked != is_done:
-                        new_status = "done" if checked else "todo"
-                        update_task_status(task_id, new_status)
+                        new_task_status = "done" if checked else "todo"
+                        update_task_status(task_id, new_task_status)
                         st.rerun()
 
-        # XAVI = captions only
         elif selected_player == "Xavi":
-            st.markdown("### ✍🏽 Caption Package")
+            st.markdown("### ✍🏽 Instagram Caption")
             st.write(ig if pd.notna(ig) and str(ig).strip() else "No Instagram caption yet")
-            st.write("")
+
+            st.markdown("### 🎬 TikTok Caption")
             st.write(tiktok if pd.notna(tiktok) and str(tiktok).strip() else "No TikTok caption yet")
-            st.write("")
+
+            st.markdown("### #️⃣ Hashtags")
             st.write(hashtags if pd.notna(hashtags) and str(hashtags).strip() else "No hashtags yet")
 
             xavi_outputs = post_outputs[
@@ -1275,7 +1275,6 @@ for _, post in filtered_posts.iterrows():
                     with st.expander(f"{row['agent_name']} — {row['output_type']}"):
                         st.text(row["content"])
 
-        # RONALDO = video/editing only
         elif selected_player == "Ronaldo":
             ronaldo_outputs = post_outputs[
                 post_outputs["agent_name"].fillna("").str.strip().str.lower() == "ronaldo"
@@ -1289,11 +1288,7 @@ for _, post in filtered_posts.iterrows():
 
             if len(video_tasks) > 0:
                 st.markdown("#### Related Tasks")
-                st.dataframe(
-                    video_tasks[["task_type", "status"]],
-                    use_container_width=True,
-                    hide_index=True,
-                )
+                st.dataframe(video_tasks[["task_type", "status"]], use_container_width=True, hide_index=True)
 
             if len(ronaldo_outputs) == 0:
                 st.info("No Ronaldo output saved for this post yet.")
@@ -1302,7 +1297,6 @@ for _, post in filtered_posts.iterrows():
                     with st.expander(f"{row['agent_name']} — {row['output_type']}", expanded=True):
                         st.text(row["content"])
 
-        # NEYMAR = design/graphic only
         elif selected_player == "Neymar":
             neymar_outputs = post_outputs[
                 post_outputs["agent_name"].fillna("").str.strip().str.lower() == "neymar"
@@ -1316,11 +1310,7 @@ for _, post in filtered_posts.iterrows():
 
             if len(design_tasks) > 0:
                 st.markdown("#### Related Tasks")
-                st.dataframe(
-                    design_tasks[["task_type", "status"]],
-                    use_container_width=True,
-                    hide_index=True,
-                )
+                st.dataframe(design_tasks[["task_type", "status"]], use_container_width=True, hide_index=True)
 
             if len(neymar_outputs) == 0:
                 st.info("No Neymar output saved for this post yet.")
@@ -1329,7 +1319,6 @@ for _, post in filtered_posts.iterrows():
                     with st.expander(f"{row['agent_name']} — {row['output_type']}", expanded=True):
                         st.text(row["content"])
 
-        # MBAPPE = stories only
         elif selected_player == "Mbappé":
             mbappe_outputs = post_outputs[
                 post_outputs["agent_name"].fillna("").str.strip().str.lower() == "mbappé"
@@ -1348,11 +1337,7 @@ for _, post in filtered_posts.iterrows():
 
             if len(story_tasks) > 0:
                 st.markdown("#### Related Tasks")
-                st.dataframe(
-                    story_tasks[["task_type", "status"]],
-                    use_container_width=True,
-                    hide_index=True,
-                )
+                st.dataframe(story_tasks[["task_type", "status"]], use_container_width=True, hide_index=True)
 
             if len(mbappe_outputs) == 0:
                 st.info("No Mbappé output saved for this post yet.")
@@ -1361,7 +1346,6 @@ for _, post in filtered_posts.iterrows():
                     with st.expander(f"{row['agent_name']} — {row['output_type']}", expanded=True):
                         st.text(row["content"])
 
-        # MESSI = strategy only
         elif selected_player == "Messi":
             messi_outputs = post_outputs[
                 post_outputs["agent_name"].fillna("").str.strip().str.lower() == "messi"
@@ -1376,7 +1360,6 @@ for _, post in filtered_posts.iterrows():
                     with st.expander(f"{row['agent_name']} — {row['output_type']}", expanded=True):
                         st.text(row["content"])
 
-        # MODRIC = repurpose only
         elif selected_player == "Modrić":
             modric_outputs = post_outputs[
                 post_outputs["agent_name"].fillna("").str.strip().str.lower() == "modrić"
@@ -1396,7 +1379,6 @@ for _, post in filtered_posts.iterrows():
                     with st.expander(f"{row['agent_name']} — {row['output_type']}", expanded=True):
                         st.text(row["content"])
 
-        # DE BRUYNE = analytics only
         elif selected_player == "De Bruyne":
             debruyne_outputs = post_outputs[
                 post_outputs["agent_name"].fillna("").str.strip().str.lower() == "de bruyne"
