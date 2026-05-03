@@ -244,8 +244,8 @@ def extract_section(text: str, tag: str) -> str:
         return ""
 
     start_idx += len(start_marker)
-
     next_idx = len(text)
+
     for possible_tag in [
         "TITLE",
         "STRATEGY",
@@ -258,12 +258,21 @@ def extract_section(text: str, tag: str) -> str:
         "REPURPOSE",
         "INSIGHT",
     ]:
+        if possible_tag == tag:
+            continue
+
         marker = f"[[{possible_tag}]]"
         idx = text.find(marker, start_idx)
+
         if idx != -1 and idx < next_idx:
             next_idx = idx
 
-    return text[start_idx:next_idx].strip()
+    section = text[start_idx:next_idx].strip()
+
+    if section.startswith(":"):
+        section = section[1:].strip()
+
+    return section
 
 
 def upsert_agent_output(cur, post_id, agent_name, output_type, content):
