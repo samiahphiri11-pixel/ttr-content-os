@@ -1,5 +1,4 @@
 import sqlite3
-from datetime import datetime, timedelta
 from pathlib import Path
 
 DB_PATH = Path("data/content.db")
@@ -60,8 +59,6 @@ def score_folder_for_post(folder_data: tuple, post_format: str) -> int:
         carousel_ready,
         priority_level,
         usage_count,
-        last_used_date,
-        cooldown_weeks,
     ) = folder_data
 
     score = 0
@@ -103,7 +100,7 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
             folder_notes.face_cam,
             folder_notes.carousel_ready,
             folder_notes.priority_level,
-            COUNT(folder_usage.id) as usage_count,
+            COUNT(folder_usage.id) as usage_count
         FROM content_folders
         LEFT JOIN folder_notes
             ON content_folders.id = folder_notes.folder_id
@@ -117,7 +114,7 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
             folder_notes.voiceover_needed,
             folder_notes.face_cam,
             folder_notes.carousel_ready,
-            folder_notes.priority_level,
+            folder_notes.priority_level
         ORDER BY content_folders.folder_name
     """, (pillar,))
 
@@ -127,10 +124,6 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
         return None
 
     available_rows = [row for row in rows if row[0] not in used_folders]
-
-    # Fallback: if everything is on cooldown, allow reuse instead of leaving the day empty.
-    if not available_rows:
-        available_rows = [row for row in rows if row[0] not in used_folders]
 
     if not available_rows:
         return None
@@ -147,18 +140,10 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
 
 
 def mark_folder_used(cur, folder_name: str):
-    today = datetime.now().strftime("%Y-%m-%d")
-
     cur.execute("""
-        UPDATE content_folders
-        SET last_used_date = ?
-        WHERE folder_name = ?
-    """, (today, folder_name))
-
-    cur.execute("""
-        INSERT INTO folder_usage (folder_name, used_at)
-        VALUES (?, ?)
-    """, (folder_name, today))
+        INSERT INTO folder_usage (folder_name)
+        VALUES (?)
+    """, (folder_name,))
 
 
 def main():
