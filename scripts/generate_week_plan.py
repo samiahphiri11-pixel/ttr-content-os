@@ -50,21 +50,6 @@ def score_value(value: str) -> int:
     return 0
 
 
-def is_on_cooldown(last_used_date, cooldown_weeks) -> bool:
-    if not last_used_date:
-        return False
-
-    if not cooldown_weeks:
-        cooldown_weeks = 2
-
-    try:
-        last_used = datetime.strptime(last_used_date, "%Y-%m-%d")
-    except ValueError:
-        return False
-
-    return datetime.now() < last_used + timedelta(weeks=int(cooldown_weeks))
-
-
 def score_folder_for_post(folder_data: tuple, post_format: str) -> int:
     (
         folder_name,
@@ -119,8 +104,6 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
             folder_notes.carousel_ready,
             folder_notes.priority_level,
             COUNT(folder_usage.id) as usage_count,
-            content_folders.last_used_date,
-            content_folders.cooldown_weeks
         FROM content_folders
         LEFT JOIN folder_notes
             ON content_folders.id = folder_notes.folder_id
@@ -135,8 +118,6 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
             folder_notes.face_cam,
             folder_notes.carousel_ready,
             folder_notes.priority_level,
-            content_folders.last_used_date,
-            content_folders.cooldown_weeks
         ORDER BY content_folders.folder_name
     """, (pillar,))
 
@@ -145,10 +126,7 @@ def get_best_folder_for_day(cur, pillar: str, post_format: str, used_folders: se
     if not rows:
         return None
 
-    available_rows = [
-        row for row in rows
-        if row[0] not in used_folders and not is_on_cooldown(row[8], row[9])
-    ]
+    available_rows = [row for row in rows if row[0] not in used_folders]
 
     # Fallback: if everything is on cooldown, allow reuse instead of leaving the day empty.
     if not available_rows:
