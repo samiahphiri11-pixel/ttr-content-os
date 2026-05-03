@@ -113,6 +113,13 @@ Freshness rules:
 - Keep the pillar the same, but change the angle, hook, and framing
 - Use the source folder as inspiration, not as the final repeated concept
 - Make it specific, modern, athletic, and useful for TT&R Elite
+Canva rules for DESIGN:
+- Make the Canva Build Prompt very detailed
+- Do not make it look overly AI-generated
+- Use clean sports design, not cartoon style
+- Keep it realistic for Canva
+- Use TT&R Elite colors: red, black, white
+- If campaign mode is active, include campaign details naturally in the design prompt
 
 IMPORTANT:
 Return your response using ONLY these exact section tags.
@@ -156,8 +163,33 @@ Execution Tips:
 - How should the video end?
 
 [[DESIGN]]
-Headline:
-Style:
+Graphic Title:
+
+Main Text:
+
+Supporting Text:
+
+Canvas Size:
+Example: Instagram square 1080x1080, Instagram story 1080x1920, or carousel.
+
+Layout Direction:
+Describe exactly where the headline, supporting text, logo, and visual elements should go.
+
+Style Direction:
+Use TT&R Elite brand style: bold, elite, athletic, red/black/white, clean, professional.
+
+Font Direction:
+Describe font feel. Example: bold condensed sans-serif, clean athletic type, strong all-caps headline.
+
+Visual Elements:
+Describe background, textures, icons, soccer/training elements, player silhouettes, motion lines, or photo usage.
+
+CTA Placement:
+Where the CTA should go if needed.
+
+Canva Build Prompt:
+Write one complete prompt I can paste into Claude with Canva connected to generate this design.
+Make it specific, polished, and ready to use.
 
 [[INSTAGRAM]]
 Write the Instagram caption here.
