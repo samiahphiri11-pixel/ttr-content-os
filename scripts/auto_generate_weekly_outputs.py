@@ -223,7 +223,7 @@ If campaign mode is active:
 def call_claude(client, model, prompt):
     response = client.messages.create(
         model=model,
-        max_tokens=900,
+        max_tokens=3000,
         system="You are an elite content system. Follow section formatting exactly.",
         messages=[{"role": "user", "content": prompt}],
     )
