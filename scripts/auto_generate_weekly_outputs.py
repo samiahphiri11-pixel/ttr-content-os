@@ -84,6 +84,10 @@ You are an elite content team for TT&R Elite.
 
 {campaign_text}
 
+For VIDEO responses:
+Assume clips are not labeled.
+Give guidance based on what to LOOK FOR inside the folder, not specific file names. 
+
 Create a fresh weekly concept and a better final title than the current working title.
 
 Your job is to create a FRESH weekly content concept for this post.
@@ -127,7 +131,29 @@ CTA:
 
 [[VIDEO]]
 Hook:
+
 Structure:
+
+Clip Selection Guide:
+- What type of clips should I look for in this folder?
+- What makes a clip “high quality” for this post?
+- What should I avoid?
+
+Best Angles to Use:
+- Close-up (for touches/details)
+- Wide (for full movement)
+- Side angle (for technique)
+- Slow motion (if available)
+
+Editing Style:
+- Pacing (fast cuts, slow build, mix)
+- When to use slow motion
+- How many clips to use (2–3, 4–6, etc.)
+
+Execution Tips:
+- Where should the strongest clip go?
+- What moment should be the hook?
+- How should the video end?
 
 [[DESIGN]]
 Headline:
