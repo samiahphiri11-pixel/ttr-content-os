@@ -206,6 +206,29 @@ st.markdown(
 def get_connection():
     return sqlite3.connect(DB_PATH)
 
+def ensure_campaign_table():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS campaigns (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            campaign_name TEXT,
+            campaign_goal TEXT,
+            campaign_start_date TEXT,
+            campaign_end_date TEXT,
+            campaign_priority TEXT,
+            campaign_cta TEXT,
+            campaign_notes TEXT,
+            campaign_active INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
 def update_task_status(task_id, new_status):
     conn = get_connection()
     cursor = conn.cursor()
@@ -861,6 +884,8 @@ def render_starting_xi_html(posts_df: pd.DataFrame, analytics_df: pd.DataFrame) 
     </html>
     """
 
+
+ensure_campaign_table()
 
 posts_df = load_posts()
 tasks_df = load_tasks()
