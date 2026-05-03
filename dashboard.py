@@ -905,7 +905,32 @@ def render_starting_xi_html(posts_df: pd.DataFrame, analytics_df: pd.DataFrame) 
     """
 
 
+def ensure_monthly_strategy_table():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        CREATE TABLE IF NOT EXISTS monthly_strategy (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            month_name TEXT,
+            monthly_theme TEXT,
+            main_goal TEXT,
+            secondary_goal TEXT,
+            priority_pillars TEXT,
+            campaign_focus TEXT,
+            strategy_notes TEXT,
+            strategy_active INTEGER DEFAULT 0,
+            created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+        )
+    """)
+
+    conn.commit()
+    conn.close()
+
+
 ensure_campaign_table()
+ensure_monthly_strategy_table()
+
 
 posts_df = load_posts()
 tasks_df = load_tasks()
@@ -930,6 +955,98 @@ st.markdown(
     """,
     unsafe_allow_html=True,
 )
+
+st.markdown('<div class="section-title">🗓️ Monthly Strategy</div>', unsafe_allow_html=True)
+st.caption("Set the direction for this month’s content.")
+
+def load_active_strategy():
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("""
+        SELECT
+            month_name,
+            monthly_theme,
+            main_goal,
+            secondary_goal,
+            priority_pillars,
+            campaign_focus,
+            strategy_notes
+        FROM monthly_strategy
+        WHERE strategy_active = 1
+        ORDER BY id DESC
+        LIMIT 1
+    """)
+
+    row = cur.fetchone()
+    conn.close()
+    return row
+
+def save_strategy(month, theme, main_goal, secondary_goal, pillars, campaign_focus, notes):
+    conn = get_connection()
+    cur = conn.cursor()
+
+    cur.execute("UPDATE monthly_strategy SET strategy_active = 0")
+
+    cur.execute("""
+        INSERT INTO monthly_strategy (
+            month_name,
+            monthly_theme,
+            main_goal,
+            secondary_goal,
+            priority_pillars,
+            campaign_focus,
+            strategy_notes,
+            strategy_active
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, 1)
+    """, (
+        month,
+        theme,
+        main_goal,
+        secondary_goal,
+        pillars,
+        campaign_focus,
+        notes
+    ))
+
+    conn.commit()
+    conn.close()
+
+active_strategy = load_active_strategy()
+
+with st.container(border=True):
+    default_month = active_strategy[0] if active_strategy else ""
+    default_theme = active_strategy[1] if active_strategy else ""
+    default_main = active_strategy[2] if active_strategy else ""
+    default_secondary = active_strategy[3] if active_strategy else ""
+    default_pillars = active_strategy[4] if active_strategy else ""
+    default_campaign = active_strategy[5] if active_strategy else ""
+    default_notes = active_strategy[6] if active_strategy else ""
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        month = st.text_input("Month", value=default_month)
+        theme = st.text_input("Monthly Theme", value=default_theme)
+        main_goal = st.text_input("Main Goal", value=default_main)
+
+    with col2:
+        secondary_goal = st.text_input("Secondary Goal", value=default_secondary)
+        pillars = st.text_input("Priority Pillars", value=default_pillars)
+        campaign_focus = st.text_input("Campaign Focus", value=default_campaign)
+
+    notes = st.text_area("Strategy Notes", value=default_notes)
+
+    if st.button("💾 Save Monthly Strategy", use_container_width=True):
+        save_strategy(month, theme, main_goal, secondary_goal, pillars, campaign_focus, notes)
+        st.success("Monthly strategy saved.")
+        st.rerun()
+
+if active_strategy:
+    st.success(f"Active Strategy: {active_strategy[0]} — {active_strategy[1]}")
+else:
+    st.info("No monthly strategy set.")
 
 st.markdown('<div class="section-title">📣 Campaign Mode</div>', unsafe_allow_html=True)
 st.caption("Use this when TT&R is promoting a camp, tournament, private training, tryouts, or special offer.")
